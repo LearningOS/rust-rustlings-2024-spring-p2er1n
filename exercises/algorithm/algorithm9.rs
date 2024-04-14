@@ -1,8 +1,7 @@
 /*
-	heap
-	This question requires you to implement a binary heap function
-*/
-// I AM NOT DONE
+heap
+This question requires you to implement a binary heap function
+ */
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -14,6 +13,7 @@ where
     count: usize,
     items: Vec<T>,
     comparator: fn(&T, &T) -> bool,
+    it_cnt: usize
 }
 
 impl<T> Heap<T>
@@ -25,6 +25,7 @@ where
             count: 0,
             items: vec![T::default()],
             comparator,
+	    it_cnt: 0
         }
     }
 
@@ -38,6 +39,21 @@ where
 
     pub fn add(&mut self, value: T) {
         //TODO
+	self.items.push(value);
+	self.count += 1;
+
+	
+	let mut idx = self.count;
+	let mut pidx = self.parent_idx(idx);
+	while idx > 1 {
+	    if (self.comparator)(&self.items[idx], &self.items[pidx]) {
+		self.items.swap(idx, pidx);
+		idx = pidx;
+		pidx = self.parent_idx(idx);
+	    }else{
+		break;
+	    }
+	}
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -58,7 +74,7 @@ where
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
         //TODO
-		0
+	0
     }
 }
 
@@ -79,13 +95,33 @@ where
 
 impl<T> Iterator for Heap<T>
 where
-    T: Default,
+    T: Default + Clone,
 {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
         //TODO
-		None
+	if self.items[1..].is_empty() {
+	    return None;
+	}
+
+	let res = self.items.swap_remove(1);
+	self.count -= 1;
+	
+	let mut idx = 1;
+	while self.children_present(idx) {
+	    if !(self.comparator)(&self.items[idx], &self.items[2*idx]) {
+		self.items.swap(idx, 2*idx);
+		idx = 2*idx;
+	    } else if 2*idx+1 <= self.count && !(self.comparator)(&self.items[idx], &self.items[2*idx+1]) {
+		self.items.swap(idx, 2*idx+1);
+		idx = 2*idx+1;
+	    }else{
+		break;
+	    }
+	}
+
+	Some(res)
     }
 }
 

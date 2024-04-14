@@ -1,9 +1,8 @@
 /*
-	binary_search tree
-	This problem requires you to implement a basic interface for a binary tree
-*/
+binary_search tree
+This problem requires you to implement a basic interface for a binary tree
+ */
 
-//I AM NOT DONE
 use std::cmp::Ordering;
 use std::fmt::Debug;
 
@@ -51,12 +50,19 @@ where
     // Insert a value into the BST
     fn insert(&mut self, value: T) {
         //TODO
+	match self.root.as_mut() {
+	    Some(bn) => { bn.insert(value) },
+	    None => { self.root = Some(Box::new(TreeNode{ value, left: None, right: None })) }
+	}
     }
 
     // Search for a value in the BST
     fn search(&self, value: T) -> bool {
         //TODO
-        true
+	match self.root.as_ref() {
+	    Some(bn) => { bn.search(value) },
+	    None => { false }
+	}	
     }
 }
 
@@ -67,6 +73,43 @@ where
     // Insert a node into the tree
     fn insert(&mut self, value: T) {
         //TODO
+	let cur_val = &self.value;
+	if &value == cur_val {
+	    return ();
+	}
+	if &value < cur_val {
+	    if self.left.is_some() {
+		self.left.as_mut().unwrap().insert(value);
+	    }else{
+		self.left = Some(Box::new(TreeNode::new(value)));
+	    }
+	}else{
+	    if self.right.is_some() {
+		self.right.as_mut().unwrap().insert(value);
+	    }else{
+		self.right = Some(Box::new(TreeNode::new(value)));
+	    }
+	}
+    }
+
+    fn search(&self, value: T) -> bool{
+	if &self.value == &value {
+	    true
+	}else if &value > &self.value {
+	    match self.right.as_ref() {
+		Some(bn) => {
+		    bn.search(value)
+		},
+		None => { false }
+	    }
+	}else{
+	    match self.left.as_ref() {
+		Some(bn) => {
+		    bn.search(value)
+		},
+		None => { false }
+	    }
+	}
     }
 }
 
